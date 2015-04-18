@@ -131,7 +131,7 @@ polling_interval = <%= node['openstack']['network']['openvswitch']['polling_inte
 # Example: tunnel_types = gre
 # Example: tunnel_types = vxlan
 # Example: tunnel_types = vxlan, gre
-tunnel_types = <%= @tunnel_types %>
+tunnel_types = <%= node['openstack']['network']['openvswitch']['tunnel_types'] %>
 
 # (IntOpt) The port number to utilize if tunnel_types includes 'vxlan'. By
 # default, this will make use of the Open vSwitch default value of '4789' if
@@ -145,14 +145,14 @@ tunnel_types = <%= @tunnel_types %>
 # The default MTU size of veth interfaces is 1500.
 # This option has no effect if use_veth_interconnection is False
 # Example: veth_mtu = 1504
-veth_mtu = <%= node["openstack"]["network"]["openvswitch"]["veth_mtu"] %>
+veth_mtu = <%= node['openstack']['network']['openvswitch']['veth_mtu'] %>
 
 # (BoolOpt) Flag to enable l2-population extension. This option should only be
 # used in conjunction with ml2 plugin and l2population mechanism driver. It'll
 # enable plugin to populate remote ports macs and IPs (using fdb_add/remove
 # RPC calbbacks instead of tunnel_sync/update) on OVS agents in order to
 # optimize tunnel management.
-l2_population = <%= @l2_population %>
+l2_population = <%= node['openstack']['network']['openvswitch']['l2_population'] %>
 
 # Enable local ARP responder. Requires OVS 2.1. This is only used by the l2
 # population ML2 MechanismDriver.
@@ -166,12 +166,12 @@ l2_population = <%= @l2_population %>
 
 # (BoolOpt) Set to True on L2 agents to enable support
 # for distributed virtual routing.
-enable_distributed_routing = <%= @enable_distributed_routing %>
+enable_distributed_routing = <%= node['openstack']['network']['l3']['router_distributed'] %> 
 
 [securitygroup]
 # Firewall driver for realizing neutron security group function.
 # Default: firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
-firewall_driver = <%= node["openstack"]["network"]["openvswitch"]["fw_driver"] %>
+firewall_driver = <%= node['openstack']['network']['openvswitch']['fw_driver'] %>
 
 # Controls if neutron security group is enabled or not.
 # It should be false when you use nova security group.
