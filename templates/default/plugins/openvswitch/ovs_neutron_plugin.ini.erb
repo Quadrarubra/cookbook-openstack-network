@@ -157,7 +157,7 @@ l2_population = <%= node['openstack']['network']['openvswitch']['l2_population']
 # Enable local ARP responder. Requires OVS 2.1. This is only used by the l2
 # population ML2 MechanismDriver.
 #
-# arp_responder = False
+arp_responder = <%= node['openstack']['network']['openvswitch']['arp_responder'] %> 
 
 # (BoolOpt) Set or un-set the don't fragment (DF) bit on outgoing IP packet
 # carrying GRE/VXLAN tunnel. The default value is True.
