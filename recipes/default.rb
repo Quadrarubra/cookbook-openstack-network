@@ -213,7 +213,7 @@ end
 
 router_distributed = 'False'
 if ['auto', 'true', true].include?(node['openstack']['network']['l3']['router_distributed'])
-  if recipe_included? 'openstack-network::server'
+  if recipe_included? 'openstack-network::server' or node.roles.include? 'network-node'
     router_distributed = 'True'
   else
     router_distributed = 'False'

@@ -95,6 +95,9 @@ auth_strategy = <%= node["openstack"]["network"]['auth_strategy'] %>
 # A 4 octet example would be dvr_base_mac = fa:16:3f:4f:00:00
 # The default is 3 octet
 # dvr_base_mac = fa:16:3f:00:00:00
+<% if node["openstack"]["network"]["l3"]["router_distributed"] %>
+dvr_base_mac = fa:16:3f:00:00:00
+<% end %>
 
 # Maximum amount of retries to generate a unique MAC address
 # mac_generation_retries = 16
