@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 
 describe 'openstack-network::identity_registration' do
   describe 'ubuntu' do
-    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+    let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
@@ -163,14 +163,14 @@ describe 'openstack-network::identity_registration' do
       )
     end
 
-    it 'grants service role to service user for service tenant' do
+    it 'grants admin role to service user for service tenant' do
       expect(chef_run).to grant_role_openstack_identity_register(
-        "Grant 'service' Role to neutron User for service Tenant"
+        "Grant 'admin' Role to neutron User for service Tenant"
       ).with(
         auth_uri: 'http://127.0.0.1:35357/v2.0',
         bootstrap_token: 'bootstrap-token',
         tenant_name: 'service',
-        role_name: 'service',
+        role_name: 'admin',
         user_name: 'neutron'
       )
     end

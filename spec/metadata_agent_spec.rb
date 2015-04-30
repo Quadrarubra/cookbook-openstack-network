@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 
 describe 'openstack-network::metadata_agent' do
   describe 'ubuntu' do
-    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+    let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
@@ -83,6 +83,11 @@ describe 'openstack-network::metadata_agent' do
             .with('network_metadata_secret')
             .and_return('network_metadata_secret_value')
           expect(chef_run).to render_file(file.name).with_content(/^metadata_proxy_shared_secret = network_metadata_secret_value$/)
+        end
+
+        it 'sets the metadata_workers attribute' do
+          node.set['openstack']['network']['metadata']['metadata_workers'] = 4
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^metadata_workers = 4$/)
         end
       end
 

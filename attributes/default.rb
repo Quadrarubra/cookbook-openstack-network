@@ -42,7 +42,7 @@ default['openstack']['network']['policyfile_url'] = nil
 # Gets set in the Network Endpoint when registering with Keystone
 default['openstack']['network']['region'] = node['openstack']['region']
 default['openstack']['network']['service_user'] = 'neutron'
-default['openstack']['network']['service_role'] = 'service'
+default['openstack']['network']['service_role'] = 'admin'
 default['openstack']['network']['service_name'] = 'neutron'
 default['openstack']['network']['service_type'] = 'network'
 default['openstack']['network']['service_tenant_name'] = 'service'
@@ -222,11 +222,14 @@ default['openstack']['network']['rpc_conn_pool_size'] = 30
 default['openstack']['network']['rpc_response_timeout'] = 60
 
 # ======== Neutron Nova interactions ==========
+# Name of the plugin to load
+default['openstack']['network']['nova']['auth_plugin'] = 'password'
+
 # CA file for novaclient to verify server certificates
-default['openstack']['network']['nova']['nova_ca_certificates_file'] = nil
+default['openstack']['network']['nova']['cafile'] = nil
 
 # Boolean to control ignoring SSL errors on the nova url
-default['openstack']['network']['nova']['nova_api_insecure'] = false
+default['openstack']['network']['nova']['insecure'] = false
 
 # Send notification to nova when port status is active.
 default['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'True'
@@ -412,6 +415,11 @@ default['openstack']['network']['vpn']['config_file'] = '/etc/neutron/vpn_agent.
 
 # The name of the secret databag containing the metadata secret
 default['openstack']['network']['metadata']['secret_name'] = 'neutron_metadata_secret'
+
+# This attribute is used to designate the number of the separate
+# neutron-metadata-agent processes to spawn. If it is not specified explicitly,
+# the default value shall be half of the CPU cores.
+default['openstack']['network']['metadata']['metadata_workers'] = nil
 
 # ============================= LBaaS Agent Configuration ==================
 
@@ -1071,11 +1079,11 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_packages' => ['openstack-neutron', 'openstack-neutron-ml2', 'iproute'],
     'neutron_client_packages' => ['python-neutronclient'],
     'neutron_dhcp_packages' => ['openstack-neutron', 'iproute'],
-    'neutron_l3_packages' => ['openstack-neutron', 'iproute', 'radvd', 'python-neutron-fwaas', 'keepalived'],
-    'neutron_vpn_packages' => ['python-neutron-vpnaas', 'iproute'],
+    'neutron_l3_packages' => ['openstack-neutron', 'iproute', 'radvd', 'openstack-neutron-fwaas', 'keepalived'],
+    'neutron_vpn_packages' => ['openstack-neutron-vpnaas', 'iproute'],
     'vpn_device_driver_packages' => ['openswan'],
     'default_config_area' => '/usr/share/strongswan/templates/config/strongswan.d',
-    'neutron_lb_packages' => ['python-neutron-lbaas', 'haproxy', 'iproute'],
+    'neutron_lb_packages' => ['openstack-neutron-lbaas', 'haproxy', 'iproute'],
     'neutron_openvswitch_packages' => ['openvswitch'],
     'neutron_openvswitch_agent_packages' => ['openstack-neutron-openvswitch', 'iproute'],
     'neutron_linuxbridge_agent_packages' => ['openstack-neutron-linuxbridge', 'iproute'],

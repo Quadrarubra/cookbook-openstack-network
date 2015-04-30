@@ -78,8 +78,8 @@ TODO
 
 Neutron Nova interactions
 -------------------------
-* `openstack["network"]["nova"]["nova_ca_certificates_file"]` - CA file for novaclient to verify server certificates
-* `openstack["network"]["nova"]["nova_api_insecure"]` - Boolean to control ignoring SSL errors on the nova url
+* `openstack["network"]["nova"]["cafile"]` - CA file for novaclient to verify server certificates
+* `openstack["network"]["nova"]["insecure"]` - Boolean to control ignoring SSL errors on the nova url
 
 MQ attributes
 -------------
@@ -199,6 +199,7 @@ License and Author
 |                      |  Chen Zhiwei (<zhiwchen@cn.ibm.com>)               |
 |                      |  Mark Vanderwiel(<vanderwl@us.ibm.com>)            |
 |                      |  Eric Zhou(<zyouzhou@cn.ibm.com>)                  |
+|                      |  Jan Klare (<j.klare@x-ion.de>)                    |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2013, AT&T Services, Inc.           |
 |                      |  Copyright (c) 2013-2014, SUSE Linux GmbH          |

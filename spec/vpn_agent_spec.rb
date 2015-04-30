@@ -4,7 +4,7 @@ require_relative 'spec_helper'
 describe 'openstack-network::vpn_agent' do
 
   describe 'ubuntu' do
-    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+    let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
@@ -27,8 +27,9 @@ describe 'openstack-network::vpn_agent' do
       expect(chef_run).to upgrade_package('openswan')
     end
 
-    it 'upgrades neutron vpn package' do
+    it 'upgrades neutron vpn packages' do
       expect(chef_run).to upgrade_package('neutron-vpn-agent')
+      expect(chef_run).to upgrade_package('python-neutron-vpnaas')
     end
 
     it 'starts ipsec on boot' do
