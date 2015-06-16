@@ -164,6 +164,17 @@ nova_version = node['openstack']['network']['nova']['url_version']
 nova_endpoint = uri_from_hash('scheme' => nova_endpoint.scheme.to_s, 'host' => nova_endpoint.host.to_s, 'port' => nova_endpoint.port.to_s, 'path' => nova_version)
 nova_admin_pass = get_password 'service', 'openstack-compute'
 
+# The auth_url in nova section follows auth_plugin
+nova_auth_url = nil
+case node['openstack']['network']['nova']['auth_plugin'].downcase
+when 'password'
+  nova_auth_url = identity_uri
+when 'v2password'
+  nova_auth_url = auth_uri_transform(identity_admin_endpoint.to_s, 'v2.0')
+when 'v3password'
+  nova_auth_url = auth_uri_transform(identity_admin_endpoint.to_s, 'v3.0')
+end
+
 if node['openstack']['network']['l3']['router_distributed'] == 'auto'
   if node['openstack']['network']['interface_driver'].split('.').last != 'OVSInterfaceDriver'
     node.set['openstack']['network']['l3']['router_distributed'] = 'false'
@@ -183,7 +194,7 @@ template '/etc/neutron/neutron.conf' do
   source 'neutron.conf.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00640
+  mode 00640
   variables(
     bind_address: network_api_bind.host,
     bind_port: network_api_bind.port,
@@ -198,6 +209,7 @@ template '/etc/neutron/neutron.conf' do
     sql_connection: sql_connection,
     nova_endpoint: nova_endpoint,
     nova_admin_pass: nova_admin_pass,
+    nova_auth_url: nova_auth_url,
     router_distributed: router_distributed
   )
 
@@ -439,7 +451,7 @@ link '/etc/neutron/plugin.ini' do
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   action :create
-  only_if { platform_family? %w{fedora rhel} }
+  only_if { platform_family? %w(fedora rhel) }
 end
 
 node.set['openstack']['network']['plugin_config_file'] = template_file
@@ -454,6 +466,6 @@ template '/etc/default/neutron-server' do
   )
   only_if do
     node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::server')
-    platform_family?(%w{debian})
+    platform_family?('debian')
   end
 end

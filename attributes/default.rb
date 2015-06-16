@@ -173,9 +173,9 @@ default['openstack']['network']['interface_driver'] = 'neutron.agent.linux.inter
 # Maps the above core plugin driver to a simple name
 # This is used in the neutron_plugin_package package name and common recipe case statements
 default['openstack']['network']['core_plugin_map'] = {
-   'ovsneutronpluginv2' => 'openvswitch',
-   'linuxbridgepluginv2' => 'linuxbridge',
-   'ml2plugin' => 'ml2'
+  'ovsneutronpluginv2' => 'openvswitch',
+  'linuxbridgepluginv2' => 'linuxbridge',
+  'ml2plugin' => 'ml2'
 }
 
 # This is used by SUSE to setup the sysconfig neutron initfile
@@ -223,7 +223,7 @@ default['openstack']['network']['rpc_response_timeout'] = 60
 
 # ======== Neutron Nova interactions ==========
 # Name of the plugin to load
-default['openstack']['network']['nova']['auth_plugin'] = 'password'
+default['openstack']['network']['nova']['auth_plugin'] = 'v2password'
 
 # CA file for novaclient to verify server certificates
 default['openstack']['network']['nova']['cafile'] = nil
@@ -244,6 +244,9 @@ default['openstack']['network']['nova']['region_name'] = node['openstack']['regi
 # Username for connection to nova in admin context
 default['openstack']['network']['nova']['admin_username'] = 'nova'
 
+# User's domain ID for authentication.
+default['openstack']['network']['nova']['user_domain_id'] = 'default'
+
 # Version for connection to nova
 # TODO: (MRV) Need to allow for this in Common.
 default['openstack']['network']['nova']['url_version'] = '/v2'
@@ -256,8 +259,15 @@ default['openstack']['network']['nova']['admin_tenant_id'] = nil
 # defined here based upon Compute cookbook attribute:
 # default['openstack']['compute']['service_tenant_name'] = 'service'
 # Since this cookbook does not depend upon Compute, can't directly
-# reference that here.
+# reference that here. Deprecated for Liberty.
 default['openstack']['network']['nova']['admin_tenant_name'] = 'service'
+
+# Project name for project scoping. Use this instead of deprecated 'admin_tenant_name',
+# which is still used until Liberty.
+default['openstack']['network']['nova']['project_name'] = node['openstack']['network']['nova']['admin_tenant_name']
+
+# Project's domain ID for project.
+default['openstack']['network']['nova']['project_domain_id'] = 'default'
 
 # Number of seconds between sending events to nova if there are any events to send
 default['openstack']['network']['nova']['send_events_interval'] = 2
