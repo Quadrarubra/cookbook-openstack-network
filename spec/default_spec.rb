@@ -417,6 +417,28 @@ describe 'openstack-network' do
       expect(chef_run).to upgrade_package('python-mysqldb')
     end
 
+    it 'does not upgrade python-neutron-lbaas when lbaas not enabled' do
+      node.override['openstack']['network']['lbaas']['enabled'] = false
+      expect(chef_run).to_not upgrade_package('python-neutron-lbaas')
+    end
+
+    it 'upgrades python-neutron-lbaas on network node when lbaas enabled' do
+      node.override['openstack']['network']['lbaas']['enabled'] = true
+      allow_any_instance_of(Chef::Recipe).to receive(:role_included?).with('os-network-server').and_return(true)
+      expect(chef_run).to upgrade_package('python-neutron-lbaas')
+    end
+
+    it 'does not upgrade python-neutron-vpnaas when vpnaas not enabled' do
+      node.override['openstack']['network']['enable_vpn'] = false
+      expect(chef_run).to_not upgrade_package('python-neutron-vpnaas')
+    end
+
+    it 'upgrades python-neutron-vpnaas on network node when vpnaas enabled' do
+      node.override['openstack']['network']['enable_vpn'] = true
+      allow_any_instance_of(Chef::Recipe).to receive(:role_included?).with('os-network-server').and_return(true)
+      expect(chef_run).to upgrade_package('python-neutron-vpnaas')
+    end
+
     describe 'neutron.conf' do
       let(:file) { chef_run.template('/etc/neutron/neutron.conf') }
 
@@ -869,6 +891,15 @@ describe 'openstack-network' do
             .with('network', 'db_username_value', 'neutron')
             .and_return('connection_value')
           expect(chef_run).to render_file(file.name).with_content(/^connection = connection_value$/)
+        end
+
+        it 'sets enabled_slave attribute' do
+          node.set['openstack']['endpoints']['db']['enabled_slave'] = true
+          node.set['openstack']['db']['network']['username'] = 'db_username_value'
+          allow_any_instance_of(Chef::Recipe).to receive(:db_uri)
+            .and_return('slave_connection_value')
+          expect(chef_run).to render_file(file.name)
+            .with_content(/^slave_connection = slave_connection_value$/)
         end
 
         %w(slave_connection max_retries retry_interval min_pool_size max_pool_size idle_timeout

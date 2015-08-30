@@ -70,6 +70,32 @@ node['openstack']['db']['python_packages'][db_type].each do |pkg|
   end
 end
 
+# neutron-lbaas-agent may not running on network node, but on network node, neutron-server still need neutron_lbaas module
+# when loading plugin if lbaas is list in service_plugins. In this case, we don't need include balance recipe for network node, but
+# we need make sure neutron lbaas packages get installed on network ndoe before neutron-server start/restart, when lbaas is enabled.
+# Otherwise neutron-server will crash for couldn't find lbaas plugin when invoking plugins from service_plugins.
+platform_options['neutron_lb_packages'].each do |pkg|
+  package pkg do
+    options platform_options['package_overrides']
+    action :upgrade
+    only_if { [true, 'true', 'True'].include?(node['openstack']['network']['lbaas']['enabled']) && role_match }
+  end
+end
+
+# neutron-vpnaas-agent may not running on network node, but on network node, neutron-server still need neutron_vpnaas module
+# when loading plugin if vpnaas is list in service_plugins. In this case, we don't need include vpn_agent recipe for network node, but
+# we need make sure neutron vpnaas packages get installed on network node before neutron-server start/restart, when vpnaas is enabled.
+# Otherwise neutron-server will crash for couldn't find vpnaas plugin when invoking plugins from service_plugins.
+platform_options['neutron_vpn_packages'].each do |pkg|
+  package pkg do
+    options platform_options['package_overrides']
+    action :upgrade
+    # The vpn agent depends on l3_agent, and providers nicira, plumgrid, bigswitch, will not use the generic l3_agent. So if we are using
+    # these providers, vpn agent will not get supported, and we should not install related packages here.
+    only_if { node['openstack']['network']['enable_vpn'] && role_match && !['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin) }
+  end
+end
+
 directory '/etc/neutron/plugins' do
   recursive true
   owner node['openstack']['network']['platform']['user']
@@ -129,6 +155,9 @@ identity_uri = identity_uri_transform(identity_admin_endpoint)
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
 sql_connection = db_uri('network', db_user, db_pass)
+if node['openstack']['endpoints']['db']['enabled_slave']
+  slave_connection =  db_uri('network', db_user, db_pass, true)
+end
 
 network_api_bind = endpoint 'network-api-bind'
 service_pass = get_password 'service', 'openstack-network'
@@ -207,6 +236,7 @@ template '/etc/neutron/neutron.conf' do
     identity_admin_endpoint: identity_admin_endpoint,
     service_pass: service_pass,
     sql_connection: sql_connection,
+    slave_connection: slave_connection,
     nova_endpoint: nova_endpoint,
     nova_admin_pass: nova_admin_pass,
     nova_auth_url: nova_auth_url,
