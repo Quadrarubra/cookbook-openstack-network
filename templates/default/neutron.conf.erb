@@ -266,21 +266,25 @@ rpc_workers = <%= node["openstack"]["network"]["rpc_workers"] %>
 
 # Max header line to accommodate large tokens
 # max_header_line = 16384
-
+<% if node['openstack']['network']['ssl']['enabled'] -%>
 # Enable SSL on the API server
-# use_ssl = False
+use_ssl = True 
 
 # Certificate file to use when starting API server securely
-# ssl_cert_file = /path/to/certfile
+ssl_cert_file = <%= node['openstack']['network']['ssl']['certfile'] %>
 
 # Private key file to use when starting API server securely
-# ssl_key_file = /path/to/keyfile
+ssl_key_file = <%= node['openstack']['network']['ssl']['keyfile'] %>
 
 # CA certificate file to use when starting API server securely to
 # verify connecting clients. This is an optional parameter only required if
 # API clients need to authenticate to the API server using SSL certificates
 # signed by a trusted CA
-# ssl_ca_file = /path/to/cafile
+
+<% if node['openstack']['network']['ssl']['cert_required'] -%>
+ssl_ca_file = <%= node['openstack']['network']['ssl']['cafile'] %>
+<% end -%>
+<% end -%>
 # ======== end of WSGI parameters related to the API server ==========
 
 # ======== neutron nova interactions ==========

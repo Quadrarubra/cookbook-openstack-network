@@ -95,6 +95,20 @@ default['openstack']['network']['api']['auth']['cafile'] = nil
 # Whether to allow the client to perform insecure SSL (https) requests
 default['openstack']['network']['api']['auth']['insecure'] = false
 
+# SSL Options
+# Specify whether to enable SSL for Neutron API endpoint
+default['openstack']['network']['ssl']['enabled'] = false
+# Specify server whether to enforce client certificate require
+default['openstack']['network']['ssl']['cert_required'] = false
+# SSL certificate, keyfile and CA certficate file locations
+default['openstack']['network']['ssl']['basedir'] = '/etc/neutron/ssl'
+# Path of the cert file for SSL.
+default['openstack']['network']['ssl']['certfile'] = "#{node['openstack']['network']['ssl']['basedir']}/certs/sslcert.pem"
+# Path of the keyfile for SSL.
+default['openstack']['network']['ssl']['keyfile'] = "#{node['openstack']['network']['ssl']['basedir']}/private/sslkey.pem"
+# Path of the CA cert file for SSL.
+default['openstack']['network']['ssl']['cafile'] = "#{node['openstack']['network']['ssl']['basedir']}/certs/sslca.pem"
+
 # logging attribute
 default['openstack']['network']['log_dir'] = '/var/log/neutron'
 default['openstack']['network']['syslog']['use'] = false
