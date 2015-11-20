@@ -113,7 +113,10 @@ bridge_mappings = <%= node["openstack"]["network"]["openvswitch"]["bridge_mappin
 polling_interval = <%= node['openstack']['network']['openvswitch']['polling_interval'] %>
 
 # Minimize polling by monitoring ovsdb for interface changes
-# minimize_polling = True
+<% if node['openstack']['network']['openvswitch']['minimize_polling'] -%>
+  minimize_polling = <%= node['openstack']['network']['openvswitch']['minimize_polling'] %>
+<% end -%>
+
 
 # When minimize_polling = True, the number of seconds to wait before
 # respawning the ovsdb monitor after losing communication with it
