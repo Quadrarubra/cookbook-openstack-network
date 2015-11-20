@@ -569,6 +569,8 @@ default['openstack']['network']['openvswitch']['bridge_mapping_interface'] = nil
 # Agent's polling interval in seconds
 default['openstack']['network']['openvswitch']['polling_interval'] = 2
 
+default['openstack']['network']['openvswitch']['minimize_polling'] = nil
+
 # The types of tenant network tunnels supported by the openvswitch agent.
 # Setting this will enable tunneling support in the agent. This can be set to
 # either 'gre' or 'vxlan'. If this is unset, it will default to [] and
