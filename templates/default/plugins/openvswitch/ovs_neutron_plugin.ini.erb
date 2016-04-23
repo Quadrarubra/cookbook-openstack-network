@@ -117,6 +117,10 @@ polling_interval = <%= node['openstack']['network']['openvswitch']['polling_inte
 minimize_polling = <%= node['openstack']['network']['openvswitch']['minimize_polling'] %>
 <% end -%>
 
+# Add ability to specify prevent_arp_spoofing 
+<% if node['openstack']['network']['openvswitch']['prevent_arp_spoofing'] -%>
+prevent_arp_spoofing = <%= node['openstack']['network']['openvswitch']['prevent_arp_spoofing'] %>
+<% end -%>
 
 # When minimize_polling = True, the number of seconds to wait before
 # respawning the ovsdb monitor after losing communication with it
